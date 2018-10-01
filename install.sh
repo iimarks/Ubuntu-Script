@@ -74,6 +74,6 @@ echo "your MSQL Ver is :"
 mysqladmin -u root -p version 
 echo ""
 echo "thanks for installing this script !!"
-echo -e "Default \e[101mDone Install | @Mark4TG"
+echo -e "\e[101mDone Install | @Mark4TG"
 #
 exit
