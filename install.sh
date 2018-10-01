@@ -74,6 +74,6 @@ echo "your MSQL Ver is :"
 mysqladmin -u root -p version 
 echo ""
 echo "thanks for installing this script !!"
-echo "https://t.me/mark4tg"
+echo -e "[41m Done Install | @Mark4TG"
 #
 exit
