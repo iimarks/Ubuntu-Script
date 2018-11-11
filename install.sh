@@ -2,68 +2,73 @@
 #
 echo ""
 echo "******************************************"
-echo "*   Scar Naruto UBUNTU 16.04 Script      *"
+echo "*          UBUNTU 18.10 Script           *"
 echo "******************************************"
 echo "*       this script well install         *"
 echo "*      LAMP server and phpMyAdmin        *"
+echo "*     With node js and secure your       *"
+echo "*      Domain with Let's Encrypt         *"
 echo "******************************************"
 echo ""
 #
 read -p 'Set Web Directory (Example: /var/www/html) ' directory
 read -p 'Set Web Domain (Example: 127.0.0.1 [Not trailing slash!]) ' domain
 #
-sudo apt-get update
-sudo apt-get upgrade -y
+sudo apt-get update && sudo apt-get upgrade
+sudo apt update && sudo apt dist-upgrade && sudo apt autoremove -y
 sudo apt-get install default-jdk -y
 sudo apt-get install software-properties-common -y
 sudo apt-get install python-software-properties -y
 sudo apt-add-repository ppa:webupd8team/java -y
 sudo add-apt-repository ppa:ondrej/php -y
+sudo add-apt-repository ppa:certbot/certbot -y
 sudo add-apt-repository -y ppa:chris-lea/redis-server
-sudo apt-get install screen -y
-sudo apt-get install nano
-sudo apt-get install curl -y
-sudo apt-get install git -y
+sudo apt-get install -y screen nano curl git zip unzip
 #
-sudo apt-get update
-sudo apt update -y
-sudo apt upgrade -y
-sudo apt-get install -y zip unzip
+sudo apt-get update && sudo apt-get upgrade
 #
-sudo apt install apache2 -y
-
+sudo apt -y install tasksel
+sudo tasksel install lamp-server
+#
+sudo systemctl stop apache2.service
+sudo systemctl start apache2.service
+sudo systemctl enable apache2.service
+#
 sudo apt-get install ufw
-sudo apt-get install -y firewalld
-firewall-cmd --permanent --zone=public --add-service=http
-firewall-cmd --permanent --zone=public --add-service=https
-firewall-cmd --permanent --add-port=21/tcp
-firewall-cmd --permanent --add-port=40000/tcp
+sudo ufw app list
 sudo ufw app info "Apache Full"
 sudo ufw allow in "Apache Full"
-firewall-cmd --reload
 #
-sudo apt update
-sudo apt install mysql-server -y
+sudo systemctl stop mysql.service
+sudo systemctl start mysql.service
+sudo systemctl enable mysql.service
 #
-sudo apt-get install php7.2 -y
-sudo apt install php7.2 php7.2-cli php7.2-gd php7.2-mysql php7.2-pdo php7.2-mbstring php7.2-tokenizer php7.2-bcmath php7.2-xml php7.2-fpm php7.2-curl php7.2-zip mariadb-server tar unzip redis-server sed composer 
-systemctl restart apache2
+sudo apt install libapache2-mod-php php-common php-mbstring php-xmlrpc php-soap php-gd php-xml php-intl php-mysql php-cli php7.2-zip php7.2-curl php7.2-pdo php7.2-tokenizer php7.2-bcmath php7.2-fpm tar redis-server sed composer 
+sudo systemctl restart apache2.service
 #
 echo "Install and Secure phpMyAdmin"
-sudo apt-get update
-sudo apt-get install phpmyadmin php7.2-mbstring php-gettext
-sudo apt-get update
+sudo apt-get update && sudo apt-get upgrade
+sudo apt-get install phpmyadmin php-gettext
 #
-sed -i 's/Require ip 127.0.0.1/Require all granted/g' /etc/apache2/apache2.conf
-sed -i 's/Require ip ::1/#Require ip ::1/g' /etc/apache2/apache2.conf
-sed -i 's/Deny from All/Allow from All/g' /etc/apache2/apache2.conf
-sed -i 's/AllowOverride None/AllowOverride All/g' /etc/apache2/apache2.conf
-a2enmod rewrite
-service apache2 restart
+sudo a2enmod rewrite
+sudo systemctl restart apache2.service
 #
-curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
+sudo apt-get update && sudo apt-get upgrade
+#
+sudo curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
 sudo apt-get install -y nodejs
-sudo apt-get install -y build-essential
+sudo apt-get -y install gcc g++ make
+curl -sL https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
+echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
+sudo apt-get update && sudo apt-get install yarn
+#
+sudo apt-get install python-certbot-apache
+sudo certbot --apache -d $domain
+#
+sudo certbot renew --dry-run
+#
+sudo apt-get update && sudo apt-get upgrade
+sudo systemctl restart apache2.service
 #
 clear
 #
@@ -73,7 +78,7 @@ php -v
 echo "your MSQL Ver is :"
 mysqladmin -u root -p version 
 echo ""
-echo "thanks for installing this script !!"
+echo ""
 echo -e "\e[101mDone Install | @Mark4TG"
 #
 exit
